@@ -1,6 +1,4 @@
-const Loader =
-    <li class="gallery-item">
-  <img src="" alt="" />
-    </li>
+const Loader = 5
+    
 
 export default Loader
