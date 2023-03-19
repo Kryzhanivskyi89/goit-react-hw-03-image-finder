@@ -5,6 +5,7 @@ import Searchbar from './Searchbar/Searchbar'
 import ImageGallery from './ImageGallery/ImageGallery'
 import Modal from './Modal/Modal'
 import Loader from './Loader/Loader'
+import Button from './Button/Button';
 
 
 class App extends Component {
@@ -13,7 +14,8 @@ class App extends Component {
 		images: [],
 		page: 1,
 		isLoading: false,
-		error: null,
+        error: null,
+        maxPage: null,
 		modal: {
 			isShowModal: false,
 			largeImageURL: '',
@@ -34,7 +36,8 @@ class App extends Component {
 		try {
             const imagesArray = await getImages(searchText, 1);
             const images = imagesArray.hits;
-            this.setState({ images });
+            const maxPage = imagesArray.totalHits / 12;
+            this.setState({ images, maxPage });
         } catch (error) {
             this.setState({ error });
         } finally {
@@ -56,7 +59,11 @@ class App extends Component {
     };
 
 	render() {
-		const { searchText,  images, isLoading, modal, error } = this.state;
+        const { searchText, images, isLoading, modal, error, maxPage, page } = this.state;
+        let loadMore = true;
+        if (page >= maxPage) {
+            loadMore = false
+        }
 		return (
             <div >	                
 				<Searchbar handleSearch={this.handleSearch} ></Searchbar>
@@ -81,6 +88,13 @@ class App extends Component {
                         closeModal={this.closeModal}
                     ></Modal>
                 )}
+                {loadMore && (
+                    <Button
+                    searchLoadMore={this.searchLoadMore}> 
+                    Load More...
+                </Button>
+                )}
+                
 			</div>
 		)
 	}
