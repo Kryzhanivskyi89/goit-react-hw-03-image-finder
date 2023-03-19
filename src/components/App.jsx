@@ -20,7 +20,7 @@ class App extends Component {
 		}
 	}
 
-	showModal = largeImageURL => {
+	openModal = largeImageURL => {
 		this.setState({modal: {largeImageURL, isShowModal: true }})
 	}
 
@@ -29,12 +29,11 @@ class App extends Component {
 	}
 
 
-
 	handleSearch = async searchText => {
-		this.setState({ searchText, page: 1});
+		this.setState({ searchText, page: 1, isLoading: true});
 		try {
-            const mass = await getImages(searchText, 1);
-            const images = mass.hits;
+            const imagesArray = await getImages(searchText, 1);
+            const images = imagesArray.hits;
             this.setState({ images });
         } catch (error) {
             this.setState({ error });
@@ -43,12 +42,12 @@ class App extends Component {
         }
 	}
 
-	getSearchLoad = async () => {
+	searchLoadMore = async () => {
         const nextPage = this.state.page + 1;
         try {
-            const mass = await getImages(this.state.searchText, nextPage);
+            const imagesArray = await getImages(this.state.searchText, nextPage);
             this.setState(prevState => ({
-                images: [...prevState.images, ...mass.hits],
+                images: [...prevState.images, ...imagesArray.hits],
                 page: prevState.page + 1,
             }));
         } catch (error) {
@@ -57,10 +56,10 @@ class App extends Component {
     };
 
 	render() {
-		const { error, images, isLoading, modal, searchText } = this.state;
+		const { searchText,  images, isLoading, modal, error } = this.state;
 		return (
-			<div className='container'>				
-				<Searchbar handleSearch={this.handleSearch} />
+            <div >	                
+				<Searchbar handleSearch={this.handleSearch} ></Searchbar>
 				{isLoading && <Loader />}
                 {error && Notiflix.Notify.failure('Error', error.message, 'Okay')}
                 {images.length === 0 &&
@@ -72,11 +71,11 @@ class App extends Component {
                 {images.length > 0 && !isLoading && (
                     <ImageGallery
                         images={images}
-                        getSearchLoad={this.getSearchLoad}
-                        onImageClick={this.showModal}
+                        searchLoadMore={this.searchLoadMore}
+                        openModal={this.openModal}
                     ></ImageGallery>
                 )}
-                {modal.openModal && (
+                {modal.isShowModal && (
                     <Modal
                         largeImageURL={modal.largeImageURL}
                         closeModal={this.closeModal}

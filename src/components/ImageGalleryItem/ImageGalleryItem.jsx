@@ -1,20 +1,18 @@
-import Component from 'react'
+import Component from 'react';
 import PropTypes from 'prop-types';
-import style from '../styles.module.css'
+import style from '../styles.module.css';
 
-
-class ImageGalleryItem extends Component {
+ class ImageGalleryItem extends Component {
     state = {};
     render() {
-        const { webformatURL, largeImageURL, showModal } = this.props;
-        
+        const { webformatURL, largeImageURL, openModal } = this.props;
         return (
             <li className={style.ImageGalleryItem}>
                 <img
                     src={webformatURL}
                     alt=""
                     className={style.ImageGalleryItemImage}
-                    onClick={() => showModal(largeImageURL)}
+                    onClick={() => openModal(largeImageURL)}
                 />
             </li>
         );
@@ -23,8 +21,12 @@ class ImageGalleryItem extends Component {
 
 export default ImageGalleryItem
 
+
 ImageGalleryItem.propTypes = {
-    webformatURL: PropTypes.string,
-    largeImageURL: PropTypes.string,
-    showModal: PropTypes.func,
+    webformatURL: PropTypes.string.isRequired,
+    largeImageURL: PropTypes.string.isRequired,
+    openModal: PropTypes.func.isRequired,
 };
+
+
+

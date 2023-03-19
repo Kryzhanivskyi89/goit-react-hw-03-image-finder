@@ -2,14 +2,14 @@ import PropTypes from 'prop-types';
 import { Component } from 'react';
 import style from '../styles.module.css'
 
-export class Button extends Component {
+class Button extends Component {
     render() {
-        const { getSearchLoad, children } = this.props;
+        const { searchLoadMore, children } = this.props;
         return (
             <button
                 className={style.Button}
                 onClick={() => {
-                    getSearchLoad();
+                    searchLoadMore();
                 }}
             >
                 {children}
@@ -19,7 +19,7 @@ export class Button extends Component {
 }
 
 Button.propTypes = {
-    getSearchLoad: PropTypes.func,
+    searchLoadMore: PropTypes.func.isRequired,
 };
     
 
