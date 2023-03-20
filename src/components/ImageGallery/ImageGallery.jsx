@@ -16,40 +16,14 @@ const ImageGallery = ({images, openModal, }) => {
                 />
             ))}
         </ul>         
-    )
-    
-    
+    ) 
 }
 
 export default ImageGallery
 
 ImageGallery.propTypes = {
-    webformatURL: PropTypes.string.isRequired,
-    largeImageURL: PropTypes.string.isRequired,    
+    images: PropTypes.array.isRequired,    
     openModal: PropTypes.func.isRequired,
 }
 
  
-
-// class ImageGallery extends Component {   
-//     render() {
-//         const {images, openModal, searchLoadMore} = this.props;
-//         return (
-//             <>
-//                 <ul className={style.ImageGallery}>
-//                     {images.map(({id, webformatURL, largeImageURL}) => (
-//                         <ImageGalleryItem
-//                             key={id}
-//                             webformatURL={webformatURL}
-//                             largeImageURL={largeImageURL}
-//                             openModal={openModal}
-//                         />
-//                     ))}
-//                 </ul>
-//                 <Button searchLoadMore={searchLoadMore}>
-//                         Load More...
-//                 </Button>                
-//             </>        
-//         )
-//     }
-// }

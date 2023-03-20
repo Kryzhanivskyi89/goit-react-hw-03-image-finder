@@ -25,21 +25,3 @@ ImageGalleryItem.propTypes = {
     largeImageURL: PropTypes.string.isRequired,
     openModal: PropTypes.func.isRequired,
 };
-
-
-// class ImageGalleryItem extends Component {
-//     state = {};
-//     render() {
-//         const { webformatURL, largeImageURL, openModal } = this.props;
-//         return (
-//             <li className={style.ImageGalleryItem}>
-//                 <img
-//                     src={webformatURL}
-//                     alt=""
-//                     className={style.ImageGalleryItemImage}
-//                     onClick={() => openModal(largeImageURL)}
-//                 />
-//             </li>
-//         );
-//     }
-// }

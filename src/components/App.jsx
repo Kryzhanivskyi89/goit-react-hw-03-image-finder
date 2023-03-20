@@ -73,7 +73,7 @@ class App extends Component {
                     !isLoading &&
                     searchText &&
                     !error &&
-					Notiflix.Notify.failure('Sorry, there are no images matching your search query. Please try again')
+					Notiflix.Notify.failure('Sorry, there are no images to your search. Please try again')
 				}
                 {images.length > 0 && !isLoading && (
                     <ImageGallery
