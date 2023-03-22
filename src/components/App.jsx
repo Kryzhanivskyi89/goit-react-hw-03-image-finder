@@ -1,103 +1,115 @@
 import { Component } from 'react'
 import Notiflix from 'notiflix';
-import getImages from '../services/getImages'
+// import API_KEY from '../services/getImages'
 import Searchbar from './Searchbar/Searchbar'
 import ImageGallery from './ImageGallery/ImageGallery'
 import Modal from './Modal/Modal'
 import Loader from './Loader/Loader'
 import Button from './Button/Button';
 
-
+const API_KEY = '33210301-3be20b33fb7f66869d8b0904e';
 class App extends Component {
-	state = {
-		searchText: '',
-		images: [],
-		page: 1,
-		isLoading: false,
+    state = {
+        searchText: '',
+        images: [],
+        page: 1,
+        isLoading: false,
         error: null,
-        maxPage: null,
-		modal: {
-			isShowModal: false,
-			largeImageURL: '',
-		}
-	}
-
-	openModal = largeImageURL => {
-		this.setState({modal: {largeImageURL, isShowModal: true }})
-	}
-
-	closeModal = () => {
-		this.setState({modal: {largeImageURL: '', isShowModal: false }})
-	}
-
-
-	handleSearch = async searchText => {
-		this.setState({ searchText, page: 1, isLoading: true});
-		try {
-            const imagesArray = await getImages(searchText, 1);
-            const images = imagesArray.hits;
-            const maxPage = imagesArray.totalHits / 12;
-            this.setState({ images, maxPage });
-        } catch (error) {
-            this.setState({ error });
-        } finally {
-            this.setState({ isLoading: false });
+        totalImages: null,
+        modal: {
+            isShowModal: false,
+            largeImageURL: '',
         }
-	}
+    }
 
-	searchLoadMore = async () => {
-        const nextPage = this.state.page + 1;
-        try {
-            const imagesArray = await getImages(this.state.searchText, nextPage);
-            this.setState(prevState => ({
-                images: [...prevState.images, ...imagesArray.hits],
-                page: prevState.page + 1,
-            }));
-        } catch (error) {
-            this.setState({ error });
+    componentDidUpdate(prevProps, prevState) {
+        if (
+            prevState.searchText !== this.state.searchText ||
+            prevState.page !== this.state.page
+        ) {
+            this.setState({ isLoading: true });
+            fetch(`https://pixabay.com/api/?q=${this.state.searchText}&page=${this.state.page}&key=${API_KEY}&image_type=photo&orientation=horizontal&per_page=12`)
+                .then(response => response.json())
+                .then(image => {
+                    if (!image.total) {
+                        return Notiflix.Notify.failure('Sorry, there are no images to your search. Please try again');
+                    }
+                    this.setState(prevState => ({
+                        images: [...prevState.images, ...image.hits],
+                        totalImages: image.total,
+                    }));
+                })
+                .catch(error => error)
+                .finally(() => {
+                    this.setState({ isLoading: false });
+                });
+        };
+    };
+    
+    handleSearch = searchText => {
+        if (this.state.searchText === searchText) {
+            return Notiflix.Notify.failure('Sorry, but you looking this image. Please try another');
         }
+        this.setState({ searchText: searchText.toLowerCase(), images: [], page: 1 })
     };
 
-	render() {
-        const { searchText, images, isLoading, modal, error, maxPage, page } = this.state;
-        let loadMore = true;
-        if (page >= maxPage) {
-            loadMore = false
+    searchLoadMore = () => {
+        this.setState(prevState => ({
+            page: prevState.page + 1,
+        }));
+    };
+        
+    openModal = largeImageURL => {
+        this.setState({ modal: { largeImageURL, isShowModal: true } })
+    }
+
+    closeModal = () => {
+        this.setState({ modal: { largeImageURL: '', isShowModal: false } })
+    }
+    
+
+    render() {
+        const { images, isLoading, modal, totalImages, page } = this.state;
+        
+        const totalPages = totalImages / 12;        
+        let loadMore = false;
+        if (images.length >= 1 &&
+            page <= Math.ceil (totalPages)) {
+            loadMore = true            
         }
-		return (
-            <div >	                
-				<Searchbar handleSearch={this.handleSearch} ></Searchbar>
-				{isLoading && <Loader />}
-                {error && Notiflix.Notify.failure('Error', error.message, 'Okay')}
-                {images.length === 0 &&
-                    !isLoading &&
-                    searchText &&
-                    !error &&
-					Notiflix.Notify.failure('Sorry, there are no images to your search. Please try again')
-				}
-                {images.length > 0 && !isLoading && (
+
+        return (
+            <div >
+                <Searchbar handleSearch={this.handleSearch} ></Searchbar>
+                {isLoading && <Loader />}               
+                                                
+                {images.length > 0 &&  (                    
                     <ImageGallery
                         images={images}
                         searchLoadMore={this.searchLoadMore}
                         openModal={this.openModal}
                     ></ImageGallery>
                 )}
-                {modal.isShowModal && (
-                    <Modal
-                        largeImageURL={modal.largeImageURL}
-                        closeModal={this.closeModal}
-                    ></Modal>
-                )}
+
                 {loadMore && (
-                    <Button
+                <Button
                     searchLoadMore={this.searchLoadMore}> 
                     Load More...
                 </Button>
                 )}
-                
-			</div>
-		)
-	}
-}
+
+                {modal.isShowModal && (
+                    <Modal
+                        largeImageURL={modal.largeImageURL}
+                        closeModal={this.closeModal}
+                    />)}
+            </div>
+        );
+    };
+};
+	
 
 export default App
+
+            
+  
