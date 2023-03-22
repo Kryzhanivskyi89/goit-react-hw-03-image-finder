@@ -70,7 +70,7 @@ class App extends Component {
 
     render() {
         const { images, isLoading, modal, totalImages, page } = this.state;
-        
+        console.log(images)
         const totalPages = totalImages / 12;        
         let loadMore = false;
         if (images.length >= 1 &&
